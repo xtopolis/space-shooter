@@ -38,14 +38,19 @@ public class Player : MonoBehaviour
     private float _gameObjectWidth = 0;
     private float nextFireTime = 0f;
     private HashSet<PowerUp.PowerUpType> _activePowerUps = new HashSet<PowerUp.PowerUpType>();
+    private Shields _shieldsComponent = null;
 
     void Start()
     {
         _activeProjectilesContainer = GameObject.Find("ProjectilesContainer");
         _audioSource = transform.GetComponent<AudioSource>();
         _mainCamera = GameObject.Find("Main Camera");
+        _shieldsComponent = _shieldsPrefab.GetComponent<Shields>();
 
         // Safety dance
+        if (_shieldsComponent == null)
+            Debug.LogError("_shieldsComponent is null");
+
         if (_mainCamera == null)
             Debug.LogError("_mainCamera is null");
 
@@ -152,7 +157,9 @@ public class Player : MonoBehaviour
     {
         if(_activePowerUps.Contains(PowerUp.PowerUpType.SHIELD))
         {
-            StartCoroutine(DeactivatePowerUp(PowerUp.PowerUpType.SHIELD, 0));
+            //StartCoroutine(DeactivatePowerUp(PowerUp.PowerUpType.SHIELD, 0));
+            if (_shieldsComponent != null)
+                _shieldsComponent.TakeDamage();
 
             if (_audioSource != null)
             {
@@ -160,8 +167,6 @@ public class Player : MonoBehaviour
                 _audioSource.Play(0);
             }
 
-            if (_shieldsPrefab != null)
-                _shieldsPrefab.SetActive(false);
             return;
         }
 
@@ -209,6 +214,8 @@ public class Player : MonoBehaviour
         }
 
         ActivatePowerUp(powerUpType);
+        if (powerUpType == PowerUp.PowerUpType.SHIELD)
+            Shields.OnShieldDestroyed += ShieldDestroyed;
     }
 
     void ActivatePowerUp(PowerUp.PowerUpType powerUpType)
@@ -255,5 +262,15 @@ public class Player : MonoBehaviour
             speed = speed * _thrustersMultiplier;
 
         return speed;
+    }
+
+    private void ShieldDestroyed()
+    {
+        Shields.OnShieldDestroyed -= ShieldDestroyed;
+
+        if (_shieldsPrefab != null)
+            _shieldsPrefab.SetActive(false);
+
+        StartCoroutine(DeactivatePowerUp(PowerUp.PowerUpType.SHIELD, 0));
     }
 }
