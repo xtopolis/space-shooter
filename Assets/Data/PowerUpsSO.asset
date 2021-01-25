@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a194bc710256ccd4cb7f9cdfa531293d, type: 3}
+  m_Name: PowerUpsSO
+  m_EditorClassIdentifier: 
+  tripleShot: {fileID: 6994471293376892061, guid: 08a54d8c2a2b7ec4ab3d062ee421136b,
+    type: 3}
+  speedBoost: {fileID: 3034819391385840998, guid: ebe3c95b580625a4eb0148c4c8fd7504,
+    type: 3}
+  shield: {fileID: 6352717274644560015, guid: 09b6e840196bf834e97322f6a3770455, type: 3}
