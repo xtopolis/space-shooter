@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _shieldSound = null;
     [SerializeField] private AudioClip _takeDamageSound = null;
     [SerializeField] private AudioClip _powerupCollected = null;
+    [SerializeField] private AudioClip _outOfAmmoSound = null;
 
     // Configuration
     [Space(5)]
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _fireRate = 0f;
     [SerializeField] private int _lives = 0;
     [SerializeField] private float _thrustersMultiplier = 1.5f;
+    [SerializeField] private int _ammoQuantity = 15;
 
     // Actions
     public static Action playerDied;
@@ -57,7 +59,7 @@ public class Player : MonoBehaviour
         if (_audioSource == null)
             Debug.LogWarning("_audioSource is null");
 
-        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null)
+        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null || _outOfAmmoSound == null)
             Debug.LogWarning("Sound clips are null");
 
         if (_explosionPrefab == null)
@@ -130,10 +132,18 @@ public class Player : MonoBehaviour
 
     void FireLaser()
     {
+        if(_ammoQuantity <= 0)
+        {
+            _audioSource.clip = _outOfAmmoSound;
+            _audioSource.Play();
+            return;
+        }
+
         GameObject nextShotPrefab = FireStrategy();
         GameObject activeProjectile = Instantiate(nextShotPrefab, transform.position, Quaternion.identity);
         activeProjectile.transform.parent = _activeProjectilesContainer.transform;
-                
+
+        _ammoQuantity -= 1;
         nextFireTime = Time.time + _fireRate;
     }
 
