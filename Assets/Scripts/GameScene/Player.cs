@@ -26,6 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 0;
     [SerializeField] private float _fireRate = 0f;
     [SerializeField] private int _lives = 0;
+    [SerializeField] private float _thrustersMultiplier = 1.5f;
 
     // Actions
     public static Action playerDied;
@@ -101,7 +102,7 @@ public class Player : MonoBehaviour
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
-        float speed = _activePowerUps.Contains(PowerUp.PowerUpType.SPEED_BOOST) ? _speed * 2f : _speed;
+        float speed = CalculateSpeed();
         
         // Begin to move the GameObject
         Vector3 nextVect = new Vector3(horiz, vert, 0) * speed * Time.deltaTime;
@@ -244,5 +245,15 @@ public class Player : MonoBehaviour
             return;
 
         TakeDamage();
+    }
+
+    private float CalculateSpeed()
+    {
+        float speed = _activePowerUps.Contains(PowerUp.PowerUpType.SPEED_BOOST) ? _speed * 2f : _speed;
+
+        if (Input.GetKey(KeyCode.LeftShift))
+            speed = speed * _thrustersMultiplier;
+
+        return speed;
     }
 }
