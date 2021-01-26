@@ -10,11 +10,13 @@ public class SpawnManager : MonoBehaviour
     [Header("Config")]
     [SerializeField] private float _enemySpawnRate = 0f;
     [SerializeField] private float _powerUpSpawnRate = 0f;
+    [SerializeField] private float _collectableSpawnRate = 0f;
     // Prefabs
     [SerializeField] private GameObject _enemyContainer = null;
     [SerializeField] private GameObject _enemyPrefab = null;
     [SerializeField] private bool _isSpawning = false;
     [SerializeField] private PowerUpsSO _powerUpsPrefabs = null;
+    [SerializeField] private CollectablesSO _collectablesPrefabs = null;
 
     public static Action GameOver;
 
@@ -25,6 +27,9 @@ public class SpawnManager : MonoBehaviour
             Debug.LogWarning("_enemySpawnRate is 0");
 
         if (_powerUpSpawnRate == 0)
+            Debug.LogWarning("_powerUpSpawnRate is 0");
+
+        if (_collectableSpawnRate == 0)
             Debug.LogWarning("_powerUpSpawnRate is 0");
 
         if (_enemyPrefab == null)
@@ -38,6 +43,9 @@ public class SpawnManager : MonoBehaviour
 
         Player.playerDied += StopSpawning;
         Asteroid.AsteroidDestroyed += StartSpawning;
+
+        // Spawn all the time, in case of start screen
+        StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> { _collectablesPrefabs.ammo }, _collectableSpawnRate));
     }
 
     private void OnDisable()
@@ -49,18 +57,17 @@ public class SpawnManager : MonoBehaviour
     void StartSpawnerCoRoutines()
     {
         // Enemy
-        StartCoroutine(SpawnGameObjectRandomly(new List<GameObject> { _enemyPrefab }, _enemySpawnRate, _enemyContainer.transform.parent));
+        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { _enemyPrefab }, _enemySpawnRate, _enemyContainer.transform.parent));
 
         // RandomPowerUp
-        StartCoroutine(SpawnGameObjectRandomly(new List<GameObject> { 
+        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { 
             _powerUpsPrefabs.tripleShot, _powerUpsPrefabs.shield, _powerUpsPrefabs.speedBoost
         }, _powerUpSpawnRate));
     }
     
-
-    IEnumerator SpawnGameObjectRandomly(List<GameObject> randomPrefab, float interval, Transform parent = null)
+    IEnumerator SpawnGameObjectRandomly(bool condition, List<GameObject> randomPrefab, float interval, Transform parent = null, bool forceSpawn = false)
     {
-        while(_isSpawning)
+        while(condition)
         {
             Vector3 nextPos = GameDataSO.RandomSpawnPositionNearBounds();
             GameObject prefab = randomPrefab[UnityEngine.Random.Range(0, randomPrefab.Count)];
