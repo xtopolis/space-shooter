@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _takeDamageSound = null;
     [SerializeField] private AudioClip _powerupCollected = null;
     [SerializeField] private AudioClip _outOfAmmoSound = null;
+    [SerializeField] private AudioClip _collectablePickupSound = null;
 
     // Configuration
     [Space(5)]
@@ -59,7 +60,8 @@ public class Player : MonoBehaviour
         if (_audioSource == null)
             Debug.LogWarning("_audioSource is null");
 
-        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null || _outOfAmmoSound == null)
+        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null 
+            || _outOfAmmoSound == null || _collectablePickupSound == null)
             Debug.LogWarning("Sound clips are null");
 
         if (_explosionPrefab == null)
@@ -282,5 +284,26 @@ public class Player : MonoBehaviour
             _shieldsPrefab.SetActive(false);
 
         StartCoroutine(DeactivatePowerUp(PowerUp.PowerUpType.SHIELD, 0));
+    }
+
+    public void CollectCollectable(Collectable.CollectableType collectableType)
+    {
+        if (_audioSource != null && _powerupCollected != null)
+        {
+            _audioSource.clip = _collectablePickupSound;
+            _audioSource.Play();
+        }
+
+        switch (collectableType)
+        {
+            case Collectable.CollectableType.AMMO:
+                _ammoQuantity = 15;
+                break;
+            case Collectable.CollectableType.HEALTH:
+                break;
+            default:
+                Debug.LogWarning($"Unhandled collectable: {collectableType}");
+                break;
+        }
     }
 }

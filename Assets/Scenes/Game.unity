@@ -657,11 +657,15 @@ MonoBehaviour:
   _shieldSound: {fileID: 8300000, guid: 83e1d1abd1732b34c87ec0d335f32a2d, type: 3}
   _takeDamageSound: {fileID: 8300000, guid: ff1d271fbba6aab4bb8992b3ff0e9e06, type: 3}
   _powerupCollected: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  _outOfAmmoSound: {fileID: 8300000, guid: d45d855210dd6d24293f0d2f8c353381, type: 3}
+  _collectablePickupSound: {fileID: 8300000, guid: 76da2db7466db004f9aea512b9ac59e9,
+    type: 3}
   _startPosition: {x: 0, y: -3, z: 0}
   _speed: 5
   _fireRate: 0.15
   _lives: 3
   _thrustersMultiplier: 2
+  _ammoQuantity: 15
 --- !u!212 &738960640
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1780,11 +1784,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemySpawnRate: 4
   _powerUpSpawnRate: 7
+  _collectableSpawnRate: 10
   _enemyContainer: {fileID: 17565289}
   _enemyPrefab: {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb,
     type: 3}
   _isSpawning: 0
   _powerUpsPrefabs: {fileID: 11400000, guid: e4334d6fd7fef53419d609f4cff0f623, type: 2}
+  _collectablesPrefabs: {fileID: 11400000, guid: ddba946b8a74ac34a8c39b46599dec3a,
+    type: 2}
 --- !u!4 &1502280668
 Transform:
   m_ObjectHideFlags: 0
