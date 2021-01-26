@@ -217,6 +217,17 @@ public class Player : MonoBehaviour
             nextDamagePrefab.SetActive(true);
     }
 
+    void RemoveDamage()
+    {
+        if (livesChanged != null)
+            livesChanged(_lives);
+
+        GameObject nextActivePrefab = _playerDamagedPrefabs.Where(pref => pref.gameObject.activeSelf == true).FirstOrDefault();
+
+        if (nextActivePrefab != null)
+            nextActivePrefab.SetActive(false);
+    }
+
     public void CollectPowerUp(PowerUp.PowerUpType powerUpType)
     {
         if(_audioSource != null && _powerupCollected != null)
@@ -300,6 +311,10 @@ public class Player : MonoBehaviour
                 _ammoQuantity = 15;
                 break;
             case Collectable.CollectableType.HEALTH:
+                if (_lives >= 3)
+                    return;
+                _lives++;
+                RemoveDamage();
                 break;
             default:
                 Debug.LogWarning($"Unhandled collectable: {collectableType}");

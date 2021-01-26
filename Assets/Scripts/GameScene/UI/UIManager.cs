@@ -77,6 +77,7 @@ public class UIManager : MonoBehaviour
                 ShowGameOverText();
                 break;
             default:
+                _livesImage.sprite = _livesSprites[3];
                 break;
         }
     }

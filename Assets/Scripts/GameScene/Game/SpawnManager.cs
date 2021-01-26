@@ -45,7 +45,9 @@ public class SpawnManager : MonoBehaviour
         Asteroid.AsteroidDestroyed += StartSpawning;
 
         // Spawn all the time, in case of start screen
-        StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> { _collectablesPrefabs.ammo }, _collectableSpawnRate));
+        StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> { 
+            _collectablesPrefabs.ammo, _collectablesPrefabs.health
+        }, _collectableSpawnRate));
     }
 
     private void OnDisable()
