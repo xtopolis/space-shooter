@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _livesImage = null;
     [SerializeField] private Text _gameOverText = null;
     [SerializeField] private Text _restartText = null;
+    [SerializeField] private Text _blackHoleText = null;
 
     [Header("Prefabs")]
     [SerializeField] private Sprite[] _livesSprites = null;
@@ -36,19 +37,23 @@ public class UIManager : MonoBehaviour
         if (_restartText == null)
             Debug.LogError("_restartText is null");
         
-
+        if (_blackHoleText == null)
+            Debug.LogError("_blackHoleText is null");
+        
         SetScoreText();
 
         // Does this (Enemy) create mem/perf issues in a real game? -- too many subs, does Destroy auto cleanup?
         Enemy.killedByPlayer += UpdateScore;
         Player.livesChanged += UpdateLives;
         Player.playerDied += Unsubscribe;
+        Player.blackHoleAvailable += BlackHoleIndicator;
     }
 
     void Unsubscribe()
     {
         Player.livesChanged -= UpdateLives;
         Player.playerDied -= Unsubscribe;
+        Player.blackHoleAvailable -= BlackHoleIndicator;
     }
 
     void UpdateScore(int amount)
@@ -97,5 +102,10 @@ public class UIManager : MonoBehaviour
             _gameOverText.gameObject.SetActive(false);
             yield return new WaitForSeconds(0.3f);
         }
+    }
+
+    void BlackHoleIndicator(bool enabled)
+    {
+        _blackHoleText.gameObject.SetActive(enabled);
     }
 }
