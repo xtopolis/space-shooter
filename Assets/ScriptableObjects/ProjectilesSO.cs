@@ -7,4 +7,5 @@ public class ProjectilesSO : ScriptableObject
 {
     [SerializeField] public GameObject laser;
     [SerializeField] public GameObject tripleShot;
+    [SerializeField] public GameObject blackHoleCreator;
 }

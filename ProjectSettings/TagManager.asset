@@ -9,6 +9,7 @@ TagManager:
   - Projectile_TripleShot
   - ProjectilesContainer
   - Enemy_Projectile
+  - Asteroid
   layers:
   - Default
   - TransparentFX

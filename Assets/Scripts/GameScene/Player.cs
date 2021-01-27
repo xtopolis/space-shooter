@@ -30,10 +30,14 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 0;
     [SerializeField] private float _thrustersMultiplier = 1.5f;
     [SerializeField] private int _ammoQuantity = 15;
+    [SerializeField] private bool _blackHoleAvailable = false;
+    [SerializeField] private int _enemiesKilled = 0;
+    [SerializeField] private int _enemiesKilledPerBlackHole = 20;
 
     // Actions
     public static Action playerDied;
     public static Action<int> livesChanged;
+    public static Action<bool> blackHoleAvailable;
 
     private AudioSource _audioSource = null;
     private GameObject _mainCamera = null;
@@ -94,14 +98,20 @@ public class Player : MonoBehaviour
         transform.position = _startPosition;
         // Get width of player to use for looping X pos
         _gameObjectWidth = GetComponent<BoxCollider2D>().bounds.size.x / 2;
+
+        Enemy.killedByPlayer += EnemyKilled;
     }
 
     // Update is called once per frame
     void Update()
     {
         Movement();
+
         if (Input.GetKeyDown(KeyCode.Space) && CanFire())
             FireLaser();
+
+        if (_blackHoleAvailable && Input.GetKeyDown(KeyCode.B))
+            FireBlackHole();
     }
     
     // Movement
@@ -319,6 +329,28 @@ public class Player : MonoBehaviour
             default:
                 Debug.LogWarning($"Unhandled collectable: {collectableType}");
                 break;
+        }
+    }
+
+    void FireBlackHole()
+    {
+        _blackHoleAvailable = false;
+        blackHoleAvailable?.Invoke(false);
+        Instantiate(projectilePrefabs.blackHoleCreator, transform.position, Quaternion.identity);
+    }
+
+    void EnemyKilled(int score)
+    {
+        _enemiesKilled += 1;
+
+        // Enable BlackHole ever 20 kills
+        if(_blackHoleAvailable == false)
+        {
+            if (_enemiesKilled % _enemiesKilledPerBlackHole == 0)
+            {
+                _blackHoleAvailable = true;
+                blackHoleAvailable?.Invoke(true);
+            }
         }
     }
 }

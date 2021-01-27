@@ -15,3 +15,5 @@ MonoBehaviour:
   laser: {fileID: 3092358915578677415, guid: 099d3805a10371c45bb1b0609584a335, type: 3}
   tripleShot: {fileID: 7706367728414538472, guid: 5d1692cbdbc8ab344af9574af337da90,
     type: 3}
+  blackHoleCreator: {fileID: 8793827977607072729, guid: 0af9c69172bae7d48af4fa33a43862e9,
+    type: 3}
