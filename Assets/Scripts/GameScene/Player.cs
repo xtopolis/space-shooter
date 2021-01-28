@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     public static Action playerDied;
     public static Action<int> livesChanged;
     public static Action<bool> blackHoleAvailable;
+    public static Action<int> ammoCountChanged;
 
     private AudioSource _audioSource = null;
     private GameObject _mainCamera = null;
@@ -119,6 +120,8 @@ public class Player : MonoBehaviour
         _thrusterBar.SetMaxAmount(_thrusterMaxCapacity);
         _thrusterBar.SetAmount(_thrusterCapacity);
 
+        ammoCountChanged?.Invoke(_ammoQuantity);
+
         Enemy.killedByPlayer += EnemyKilled;
     }
 
@@ -176,6 +179,8 @@ public class Player : MonoBehaviour
         activeProjectile.transform.parent = _activeProjectilesContainer.transform;
 
         _ammoQuantity -= 1;
+        ammoCountChanged?.Invoke(_ammoQuantity);
+
         nextFireTime = Time.time + _fireRate;
     }
 
@@ -342,6 +347,7 @@ public class Player : MonoBehaviour
         {
             case Collectable.CollectableType.AMMO:
                 _ammoQuantity = 15;
+                ammoCountChanged?.Invoke(_ammoQuantity);
                 break;
             case Collectable.CollectableType.HEALTH:
                 if (_lives >= 3)

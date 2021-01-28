@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Text _gameOverText = null;
     [SerializeField] private Text _restartText = null;
     [SerializeField] private Text _blackHoleText = null;
+    [SerializeField] private Text _ammoCountText = null;
 
     [Header("Prefabs")]
     [SerializeField] private Sprite[] _livesSprites = null;
@@ -22,6 +23,9 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (_ammoCountText == null)
+            Debug.LogError("_ammoCountText is null");
+
         if (_livesSprites == null)
             Debug.LogError("_livesSprites is null");
 
@@ -47,6 +51,7 @@ public class UIManager : MonoBehaviour
         Player.livesChanged += UpdateLives;
         Player.playerDied += Unsubscribe;
         Player.blackHoleAvailable += BlackHoleIndicator;
+        Player.ammoCountChanged += SetAmmoText;
     }
 
     void Unsubscribe()
@@ -54,6 +59,7 @@ public class UIManager : MonoBehaviour
         Player.livesChanged -= UpdateLives;
         Player.playerDied -= Unsubscribe;
         Player.blackHoleAvailable -= BlackHoleIndicator;
+        Player.ammoCountChanged -= SetAmmoText;
     }
 
     void UpdateScore(int amount)
@@ -107,5 +113,10 @@ public class UIManager : MonoBehaviour
     void BlackHoleIndicator(bool enabled)
     {
         _blackHoleText.gameObject.SetActive(enabled);
+    }
+
+    void SetAmmoText(int newAmount)
+    {
+        _ammoCountText.text = $"{newAmount}/15";
     }
 }
