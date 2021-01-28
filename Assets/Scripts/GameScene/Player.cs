@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _shieldsPrefab = null;
     [SerializeField] private GameObject _explosionPrefab = null;
     [SerializeField] private List<GameObject>_playerDamagedPrefabs = null;
+    [SerializeField] private GameObject _thruster = null;
+    [SerializeField] private ThrusterBar _thrusterBar = null;
 
     [Header("Audio")]
     [SerializeField] private AudioClip _shieldSound = null;
@@ -33,6 +35,11 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _blackHoleAvailable = false;
     [SerializeField] private int _enemiesKilled = 0;
     [SerializeField] private int _enemiesKilledPerBlackHole = 20;
+    [Header("Thruster Config")]
+    [SerializeField] private float _thrusterMaxCapacity = 10f;
+    [SerializeField] private float _thrusterCapacity = 0f;
+    [SerializeField] private bool _thrusterOnCoolDown = true;
+    [SerializeField] private float _thrusterDecayRechargeRate = 0.25f;
 
     // Actions
     public static Action playerDied;
@@ -44,8 +51,10 @@ public class Player : MonoBehaviour
 
     private float _gameObjectWidth = 0;
     private float nextFireTime = 0f;
+    private float nextThrusterTick = -1f;
     private HashSet<PowerUp.PowerUpType> _activePowerUps = new HashSet<PowerUp.PowerUpType>();
     private Shields _shieldsComponent = null;
+    private SpriteRenderer _thrusterSprite = null;
 
     void Start()
     {
@@ -54,7 +63,16 @@ public class Player : MonoBehaviour
         _mainCamera = GameObject.Find("Main Camera");
         _shieldsComponent = _shieldsPrefab.GetComponent<Shields>();
 
+        if(_thruster != null)
+            _thrusterSprite = _thruster.GetComponent<SpriteRenderer>();
+
         // Safety dance
+        if (_thruster == null || _thrusterSprite == null)
+            Debug.LogError("_thruster or _thrusterSprite is null");
+
+        if (_thrusterBar == null)
+            Debug.LogError("_thrusterBar is null");
+
         if (_shieldsComponent == null)
             Debug.LogError("_shieldsComponent is null");
 
@@ -98,6 +116,8 @@ public class Player : MonoBehaviour
         transform.position = _startPosition;
         // Get width of player to use for looping X pos
         _gameObjectWidth = GetComponent<BoxCollider2D>().bounds.size.x / 2;
+        _thrusterBar.SetMaxAmount(_thrusterMaxCapacity);
+        _thrusterBar.SetAmount(_thrusterCapacity);
 
         Enemy.killedByPlayer += EnemyKilled;
     }
@@ -291,8 +311,11 @@ public class Player : MonoBehaviour
     {
         float speed = _activePowerUps.Contains(PowerUp.PowerUpType.SPEED_BOOST) ? _speed * 2f : _speed;
 
-        if (Input.GetKey(KeyCode.LeftShift))
-            speed = speed * _thrustersMultiplier;
+        if (Input.GetKey(KeyCode.LeftShift) && _thrusterOnCoolDown == false && _thrusterCapacity > 0)
+        {
+            speed *= _thrustersMultiplier;
+        }
+        HandleThrusterCoolDown();
 
         return speed;
     }
@@ -352,5 +375,48 @@ public class Player : MonoBehaviour
                 blackHoleAvailable?.Invoke(true);
             }
         }
+    }
+
+    void HandleThrusterCoolDown()
+    {
+        bool isBoosting = Input.GetKey(KeyCode.LeftShift) && _thrusterOnCoolDown == false;
+
+        if (isBoosting)
+        {
+            _thrusterSprite.color = Color.blue;
+        } else
+        {
+            _thrusterSprite.color = Color.white;
+        }
+
+        if (Time.time >= nextThrusterTick)
+        {
+            float nextCapacity;
+
+            if (isBoosting)
+            {
+                nextCapacity = Mathf.Max(0, _thrusterCapacity - 1f);
+
+                if (nextCapacity <= 0)
+                {
+                    //_thrusterSprite.color = Color.white;
+                    _thrusterOnCoolDown = true;
+                    _audioSource.clip = _outOfAmmoSound;
+                    _audioSource.Play();
+                }
+            } else
+            {
+                nextCapacity = Mathf.Min(_thrusterMaxCapacity, _thrusterCapacity + 1f);    
+
+                if (nextCapacity >= 5f) // 50% refill wait penalty
+                    _thrusterOnCoolDown = false;
+            }
+            
+            _thrusterCapacity = nextCapacity;
+            _thrusterBar.SetAmount(_thrusterCapacity);
+
+            nextThrusterTick = Time.time + _thrusterDecayRechargeRate;
+        }
+
     }
 }
