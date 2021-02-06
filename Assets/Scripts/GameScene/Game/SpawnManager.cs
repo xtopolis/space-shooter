@@ -20,9 +20,17 @@ public class SpawnManager : MonoBehaviour
 
     public static Action GameOver;
 
+    private WaveManager _waveManager = null;
+
     // Start is called before the first frame update
     void Start()
     {
+        _waveManager = GetComponent<WaveManager>();
+        _waveManager.OnAllWavesDestroyed += JobsDone;
+
+        if (_waveManager == null)
+            Debug.LogError("_waveManager is null");
+
         if (_enemySpawnRate == 0)
             Debug.LogWarning("_enemySpawnRate is 0");
 
@@ -34,7 +42,7 @@ public class SpawnManager : MonoBehaviour
 
         if (_enemyPrefab == null)
             Debug.LogError("_enemyPrefab is null");
-        
+
         if (_enemyContainer == null)
             Debug.LogError("_enemyContainer is null");
 
@@ -45,7 +53,7 @@ public class SpawnManager : MonoBehaviour
         Asteroid.AsteroidDestroyed += StartSpawning;
 
         // Spawn all the time, in case of start screen
-        StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> { 
+        StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> {
             _collectablesPrefabs.ammo, _collectablesPrefabs.health
         }, _collectableSpawnRate));
     }
@@ -62,14 +70,14 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { _enemyPrefab }, _enemySpawnRate, _enemyContainer.transform.parent));
 
         // RandomPowerUp
-        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { 
+        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> {
             _powerUpsPrefabs.tripleShot, _powerUpsPrefabs.shield, _powerUpsPrefabs.speedBoost
         }, _powerUpSpawnRate));
     }
-    
+
     IEnumerator SpawnGameObjectRandomly(bool condition, List<GameObject> randomPrefab, float interval, Transform parent = null, bool forceSpawn = false)
     {
-        while(condition)
+        while (condition)
         {
             Vector3 nextPos = GameDataSO.RandomSpawnPositionNearBounds();
             GameObject prefab = randomPrefab[UnityEngine.Random.Range(0, randomPrefab.Count)];
@@ -78,7 +86,7 @@ public class SpawnManager : MonoBehaviour
 
             if (parent != null)
                 gameObj.transform.parent = parent;
-            
+
             yield return new WaitForSeconds(interval);
         }
     }
@@ -90,7 +98,13 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
-        _isSpawning = true;
-        StartSpawnerCoRoutines();
+        //_isSpawning = true;
+        //StartSpawnerCoRoutines();
+        _waveManager.StartWaves();
+    }
+
+    public void JobsDone()
+    {
+        print("Spawn manager:: Jobs done");
     }
 }
