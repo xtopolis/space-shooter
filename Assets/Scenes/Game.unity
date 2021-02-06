@@ -1021,7 +1021,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 92.8, y: -87.4}
+  m_AnchoredPosition: {x: 92.8, y: -114.4}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &815529621
@@ -1345,7 +1345,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -5.1340003, y: -8.026, z: -29.957}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23.399994, y: -79.600006}
+  m_AnchoredPosition: {x: 23.399963, y: -79.600006}
   m_SizeDelta: {x: 15.657928, y: 15.932831}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &995490620
@@ -2215,6 +2215,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1502280668}
   - component: {fileID: 1502280667}
+  - component: {fileID: 1502280669}
   m_Layer: 0
   m_Name: SpawnManager
   m_TagString: Untagged
@@ -2259,6 +2260,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1502280669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502280666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c8477a414e7b584d990f0600449e4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyContainer: {fileID: 17565289}
+  _waves:
+  - {fileID: 11400000, guid: 94463b947aed95e4cb4ec54c11dc6e74, type: 2}
+  - {fileID: 11400000, guid: bd3d2b35ee851bb4aa8311af2fc9680f, type: 2}
+  - {fileID: 11400000, guid: c71c192724a59394aa9590d0f9a57d25, type: 2}
+  - {fileID: 11400000, guid: 0c1e402ca2976ee49940cdfd8bfb0bf7, type: 2}
 --- !u!1001 &1512418840
 PrefabInstance:
   m_ObjectHideFlags: 0

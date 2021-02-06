@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDestroyable
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject _laserPrefab = null;
@@ -33,6 +33,8 @@ public class Enemy : MonoBehaviour
 
     // Angler
     GameObject player = null;
+
+    public event Action OnWillDestroy;
 
     // Start is called before the first frame update
     void Start()
@@ -204,5 +206,10 @@ public class Enemy : MonoBehaviour
         GameObject laser = Instantiate(_laserPrefab, transform.position, rotation);
         laser.tag = "Enemy_Projectile";
 
+    }
+
+    private void OnDisable()
+    {
+        OnWillDestroy?.Invoke();
     }
 }
