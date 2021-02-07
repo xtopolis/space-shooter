@@ -314,6 +314,7 @@ public class Player : MonoBehaviour
         if (collision.CompareTag("Enemy_Projectile") == false)
             return;
 
+        Destroy(collision.gameObject);
         TakeDamage();
     }
 
