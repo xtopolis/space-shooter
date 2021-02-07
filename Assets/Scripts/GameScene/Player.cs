@@ -12,9 +12,10 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _activeProjectilesContainer = null;
     [SerializeField] private GameObject _shieldsPrefab = null;
     [SerializeField] private GameObject _explosionPrefab = null;
-    [SerializeField] private List<GameObject>_playerDamagedPrefabs = null;
+    [SerializeField] private List<GameObject> _playerDamagedPrefabs = null;
     [SerializeField] private GameObject _thruster = null;
     [SerializeField] private ThrusterBar _thrusterBar = null;
+    [SerializeField] private GameObject _antiMatterParticles = null;
 
     [Header("Audio")]
     [SerializeField] private AudioClip _shieldSound = null;
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _thrusterCapacity = 0f;
     [SerializeField] private bool _thrusterOnCoolDown = true;
     [SerializeField] private float _thrusterDecayRechargeRate = 0.25f;
+    [SerializeField] private bool _speedDebuffEnabled = false;
 
     // Actions
     public static Action playerDied;
@@ -64,7 +66,7 @@ public class Player : MonoBehaviour
         _mainCamera = GameObject.Find("Main Camera");
         _shieldsComponent = _shieldsPrefab.GetComponent<Shields>();
 
-        if(_thruster != null)
+        if (_thruster != null)
             _thrusterSprite = _thruster.GetComponent<SpriteRenderer>();
 
         // Safety dance
@@ -83,7 +85,7 @@ public class Player : MonoBehaviour
         if (_audioSource == null)
             Debug.LogWarning("_audioSource is null");
 
-        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null 
+        if (_takeDamageSound == null || _shieldSound == null || _powerupCollected == null
             || _outOfAmmoSound == null || _collectablePickupSound == null)
             Debug.LogWarning("Sound clips are null");
 
@@ -101,6 +103,9 @@ public class Player : MonoBehaviour
 
         if (_activeProjectilesContainer == null)
             Debug.LogError("_activeProjectilesContainer is null");
+
+        if (_antiMatterParticles == null)
+            Debug.LogError("_antiMatterParticles is null");
 
         // Gotchas
         if (_speed == 0)
@@ -136,16 +141,16 @@ public class Player : MonoBehaviour
         if (_blackHoleAvailable && Input.GetKeyDown(KeyCode.B))
             FireBlackHole();
     }
-    
+
     // Movement
 
     void Movement()
-    {      
+    {
         float horiz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
 
         float speed = CalculateSpeed();
-        
+
         // Begin to move the GameObject
         Vector3 nextVect = new Vector3(horiz, vert, 0) * speed * Time.deltaTime;
         transform.Translate(nextVect);
@@ -156,7 +161,7 @@ public class Player : MonoBehaviour
         // Wrap X
         float xWrapBoundary = GameDataSO.xRange + _gameObjectWidth;
 
-        if(transform.position.x > xWrapBoundary)
+        if (transform.position.x > xWrapBoundary)
             transform.position = new Vector3(-GameDataSO.xRange, transform.position.y, 0);
 
         if (transform.position.x < -xWrapBoundary)
@@ -167,7 +172,7 @@ public class Player : MonoBehaviour
 
     void FireLaser()
     {
-        if(_ammoQuantity <= 0)
+        if (_ammoQuantity <= 0)
         {
             _audioSource.clip = _outOfAmmoSound;
             _audioSource.Play();
@@ -202,7 +207,7 @@ public class Player : MonoBehaviour
     // Public Gameplay Methods
     public void TakeDamage(int damageAmount = 1)
     {
-        if(_activePowerUps.Contains(PowerUp.PowerUpType.SHIELD))
+        if (_activePowerUps.Contains(PowerUp.PowerUpType.SHIELD))
         {
             //StartCoroutine(DeactivatePowerUp(PowerUp.PowerUpType.SHIELD, 0));
             if (_shieldsComponent != null)
@@ -220,7 +225,7 @@ public class Player : MonoBehaviour
         _lives -= damageAmount;
         VisualizeDamage();
 
-        if(_mainCamera != null)
+        if (_mainCamera != null)
         {
             Animator anim = _mainCamera.GetComponent<Animator>();
             if (anim != null)
@@ -235,8 +240,8 @@ public class Player : MonoBehaviour
 
         if (livesChanged != null)
             livesChanged(_lives);
-        
-        if(_lives <= 0)
+
+        if (_lives <= 0)
         {
             playerDied();
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
@@ -247,7 +252,7 @@ public class Player : MonoBehaviour
     void VisualizeDamage()
     {
         GameObject nextDamagePrefab = _playerDamagedPrefabs.Where(pref => pref.gameObject.activeSelf == false).FirstOrDefault();
-        
+
         if (nextDamagePrefab != null)
             nextDamagePrefab.SetActive(true);
     }
@@ -265,7 +270,7 @@ public class Player : MonoBehaviour
 
     public void CollectPowerUp(PowerUp.PowerUpType powerUpType)
     {
-        if(_audioSource != null && _powerupCollected != null)
+        if (_audioSource != null && _powerupCollected != null)
         {
             _audioSource.clip = _powerupCollected;
             _audioSource.Play();
@@ -315,6 +320,8 @@ public class Player : MonoBehaviour
     private float CalculateSpeed()
     {
         float speed = _activePowerUps.Contains(PowerUp.PowerUpType.SPEED_BOOST) ? _speed * 2f : _speed;
+        if (_speedDebuffEnabled)
+            speed = speed / 3;
 
         if (Input.GetKey(KeyCode.LeftShift) && _thrusterOnCoolDown == false && _thrusterCapacity > 0)
         {
@@ -355,6 +362,9 @@ public class Player : MonoBehaviour
                 _lives++;
                 RemoveDamage();
                 break;
+            case Collectable.CollectableType.ANTIMATTER:
+                ApplySpeedDebuff();
+                break;
             default:
                 Debug.LogWarning($"Unhandled collectable: {collectableType}");
                 break;
@@ -373,7 +383,7 @@ public class Player : MonoBehaviour
         _enemiesKilled += 1;
 
         // Enable BlackHole ever 20 kills
-        if(_blackHoleAvailable == false)
+        if (_blackHoleAvailable == false)
         {
             if (_enemiesKilled % _enemiesKilledPerBlackHole == 0)
             {
@@ -390,7 +400,8 @@ public class Player : MonoBehaviour
         if (isBoosting)
         {
             _thrusterSprite.color = Color.blue;
-        } else
+        }
+        else
         {
             _thrusterSprite.color = Color.white;
         }
@@ -410,19 +421,35 @@ public class Player : MonoBehaviour
                     _audioSource.clip = _outOfAmmoSound;
                     _audioSource.Play();
                 }
-            } else
+            }
+            else
             {
-                nextCapacity = Mathf.Min(_thrusterMaxCapacity, _thrusterCapacity + 1f);    
+                nextCapacity = Mathf.Min(_thrusterMaxCapacity, _thrusterCapacity + 1f);
 
                 if (nextCapacity >= 5f) // 50% refill wait penalty
                     _thrusterOnCoolDown = false;
             }
-            
+
             _thrusterCapacity = nextCapacity;
             _thrusterBar.SetAmount(_thrusterCapacity);
 
             nextThrusterTick = Time.time + _thrusterDecayRechargeRate;
         }
 
+    }
+
+    void ApplySpeedDebuff()
+    {
+        _speedDebuffEnabled = true;
+        _antiMatterParticles.SetActive(true);
+        StartCoroutine(DisableSpeedDebuff(10));
+    }
+
+    IEnumerator DisableSpeedDebuff(float afterSeconds)
+    {
+        yield return new WaitForSeconds(afterSeconds);
+        _speedDebuffEnabled = false;
+        _antiMatterParticles.SetActive(false);
+        StopCoroutine(DisableSpeedDebuff(1f));
     }
 }

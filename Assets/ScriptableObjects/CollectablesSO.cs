@@ -7,4 +7,5 @@ public class CollectablesSO : ScriptableObject
 {
     [SerializeField] public GameObject ammo;
     [SerializeField] public GameObject health;
+    [SerializeField] public GameObject antiMatter;
 }
