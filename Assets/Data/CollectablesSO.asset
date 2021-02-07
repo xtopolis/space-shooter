@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammo: {fileID: 4451257838465138080, guid: 60ad8be45831bf14f91f78f2ea55057b, type: 3}
   health: {fileID: 2438664382324772409, guid: cb11a28e6fcd6a541b2ffc89d820cf40, type: 3}
+  antiMatter: {fileID: 81945258798036476, guid: 55ce69c9e71f6644c9aeecf5c78f6e84,
+    type: 3}

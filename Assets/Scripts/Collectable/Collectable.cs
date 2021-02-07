@@ -11,7 +11,8 @@ abstract public class Collectable : MonoBehaviour
     public enum CollectableType
     {
         AMMO,
-        HEALTH
+        HEALTH,
+        ANTIMATTER
     }
 
     // Start is called before the first frame update
@@ -27,7 +28,9 @@ abstract public class Collectable : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.down * _fallSpeed * Time.deltaTime, Space.Self);
-        transform.Rotate(0f, 50f * Time.deltaTime, 0f);
+
+        if (collectableType == CollectableType.AMMO)
+            transform.Rotate(0f, 50f * Time.deltaTime, 0f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
