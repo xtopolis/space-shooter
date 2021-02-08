@@ -14,7 +14,7 @@ public class SpawnManager : MonoBehaviour
     // Prefabs
     [SerializeField] private GameObject _enemyContainer = null;
     [SerializeField] private GameObject _enemyPrefab = null;
-    [SerializeField] private bool _isSpawning = false;
+    [SerializeField] private bool _isSpawning = true;
     [SerializeField] private PowerUpsSO _powerUpsPrefabs = null;
     [SerializeField] private CollectablesSO _collectablesPrefabs = null;
 
@@ -25,6 +25,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Wat();
         _waveManager = GetComponent<WaveManager>();
         _waveManager.OnAllWavesDestroyed += JobsDone;
 
@@ -91,6 +92,22 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    IEnumerator SpawnCollectables()
+    {
+        while (_isSpawning)
+        {
+            Vector3 nextPos = GameDataSO.RandomSpawnPositionNearBounds();
+            GameObject prefab = PrefabFrom(CollectableItemFromTable());
+
+            GameObject gameObj = Instantiate(prefab, nextPos, Quaternion.identity);
+
+            if (_enemyContainer.transform.parent != null)
+                gameObj.transform.parent = _enemyContainer.transform.parent;
+
+            yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 5f));
+        }
+    }
+
     public void StopSpawning()
     {
         _isSpawning = false;
@@ -98,13 +115,63 @@ public class SpawnManager : MonoBehaviour
 
     public void StartSpawning()
     {
-        //_isSpawning = true;
-        //StartSpawnerCoRoutines();
+        StartCoroutine(SpawnCollectables());
         _waveManager.StartWaves();
     }
 
     public void JobsDone()
     {
         print("Spawn manager:: Jobs done");
+    }
+
+    private Collectable.CollectableType CollectableItemFromTable()
+    {
+        int randy = UnityEngine.Random.Range(0, 100);
+
+        if (randy <= 60)
+        {
+            return Collectable.CollectableType.AMMO;
+        }
+        else if (randy <= 90)
+        {
+            return Collectable.CollectableType.ANTIMATTER;
+        }
+        else
+        {
+            return Collectable.CollectableType.HEALTH;
+        }
+    }
+
+    private GameObject PrefabFrom(Collectable.CollectableType collectibleType)
+    {
+        switch (collectibleType)
+        {
+            case Collectable.CollectableType.AMMO:
+                return _collectablesPrefabs.ammo;
+            case Collectable.CollectableType.HEALTH:
+                return _collectablesPrefabs.health;
+            case Collectable.CollectableType.ANTIMATTER:
+                return _collectablesPrefabs.antiMatter;
+            default:
+                Debug.LogError($"Unhandled collectibleType: {collectibleType}");
+                return new GameObject();
+        }
+    }
+
+    void Wat()
+    {
+        Dictionary<Collectable.CollectableType, int> debug = new Dictionary<Collectable.CollectableType, int> {
+            [Collectable.CollectableType.AMMO] = 0,
+            [Collectable.CollectableType.HEALTH] = 0,
+            [Collectable.CollectableType.ANTIMATTER] = 0
+        };
+
+        for(int i = 0; i< 10000; i++)
+        {
+            Collectable.CollectableType c = CollectableItemFromTable();
+            debug[c] = debug[c] + 1;
+        }
+
+        print($"AMMO: {debug[Collectable.CollectableType.AMMO]} | ANTIMATTER: {debug[Collectable.CollectableType.ANTIMATTER]} | HEALTH: {debug[Collectable.CollectableType.HEALTH]}");
     }
 }
