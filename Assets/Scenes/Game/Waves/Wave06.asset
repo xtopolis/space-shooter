@@ -10,17 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58dd0c92eec6a4045b73a6aaa275d171, type: 3}
-  m_Name: Wave04
+  m_Name: Wave06
   m_EditorClassIdentifier: 
   enemies:
   - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
-  - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
+  - {fileID: 6112017845108046599, guid: d45ee24e46f84fe47905e206d67559f7, type: 3}
   - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
   - {fileID: 6112017845108046599, guid: d45ee24e46f84fe47905e206d67559f7, type: 3}
   - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
-  - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
-  - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
   - {fileID: 6112017845108046599, guid: d45ee24e46f84fe47905e206d67559f7, type: 3}
   - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
+  - {fileID: 6112017845108046599, guid: d45ee24e46f84fe47905e206d67559f7, type: 3}
   - {fileID: 8501243672900524645, guid: f41669a28a61a99438a14ba5f667b2eb, type: 3}
   spawnMethod: 0

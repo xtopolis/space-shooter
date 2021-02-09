@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour, IDestroyable
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject _laserPrefab = null;
+    [SerializeField] private GameObject _shieldPrefab = null;
 
     [Header("Config")]
     [SerializeField] private float _speed = 0;
@@ -36,6 +37,9 @@ public class Enemy : MonoBehaviour, IDestroyable
 
     public event Action OnWillDestroy;
 
+    private bool _hasShield = false;
+    private Shields _shieldComponent = null;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,10 +51,16 @@ public class Enemy : MonoBehaviour, IDestroyable
         if (_speed == 0)
             Debug.LogWarning("_speed is 0");
 
+        if (_shieldPrefab == null)
+            Debug.LogWarning("_shieldPrefab == null");
+
         transform.position = GameDataSO.RandomSpawnPositionNearBounds();
         _yStopPos = UnityEngine.Random.Range(GameDataSO.yRange - 2, GameDataSO.yRange - 4);
 
         SetEnemyType();
+
+        if (UnityEngine.Random.Range(0,4) > 2)
+            EnableShield();
 
         //Angler
         if (_enemyType == EnemyType.ANGLER)
@@ -71,6 +81,29 @@ public class Enemy : MonoBehaviour, IDestroyable
         System.Random random = new System.Random();
         EnemyType randomEnemy = (EnemyType)values.GetValue(random.Next(values.Length));
         _enemyType = randomEnemy;
+    }
+
+    void EnableShield()
+    {
+        if (_shieldPrefab == null)
+            Debug.LogError("_shieldPrefab in null");
+        
+        _hasShield = true;
+
+        _shieldComponent = _shieldPrefab.GetComponent<Shields>();
+        _shieldComponent.OnShieldDestroyed += DisableShield;
+
+        if (_shieldComponent != null)
+        {
+            _shieldComponent.transform.gameObject.SetActive(true);
+            _shieldComponent.transform.parent = transform;
+            _shieldComponent.SetShieldHits(1);
+        }
+        else
+        {
+            Debug.LogError("_shieldComponent is null");
+        }
+
     }
 
     // Update is called once per frame
@@ -129,11 +162,6 @@ public class Enemy : MonoBehaviour, IDestroyable
         }
     }
 
-    void MoveAtAngle()
-    {
-        MoveNormally();
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other == null)
@@ -146,7 +174,6 @@ public class Enemy : MonoBehaviour, IDestroyable
         {
             case "Player":
                 // Animating explosion, don't hurt player
-
                 Player player = other.GetComponent<Player>();
                 if (player != null)
                     player.TakeDamage();
@@ -154,6 +181,12 @@ public class Enemy : MonoBehaviour, IDestroyable
                 break;
 
             case "Projectile_Laser":
+                if (AbsorbDamageIfShield())
+                {
+                    Destroy(other.gameObject);
+                    return;
+                }
+
                 if (killedByPlayer != null)
                     killedByPlayer(10);
                 Destroy(other.gameObject);
@@ -211,5 +244,24 @@ public class Enemy : MonoBehaviour, IDestroyable
     private void OnDisable()
     {
         OnWillDestroy?.Invoke();
+    }
+
+    void DisableShield()
+    {
+        _shieldComponent.OnShieldDestroyed -= DisableShield;
+        _hasShield = false;
+        _shieldPrefab.SetActive(false);
+    }
+
+    bool AbsorbDamageIfShield()
+    {
+        if (_hasShield && _shieldComponent != null)
+        {
+            _shieldComponent.TakeDamage();// events to this::DisableShield
+            return true;
+        } else
+        {
+            return false;
+        }
     }
 }

@@ -278,7 +278,7 @@ public class Player : MonoBehaviour
 
         ActivatePowerUp(powerUpType);
         if (powerUpType == PowerUp.PowerUpType.SHIELD)
-            Shields.OnShieldDestroyed += ShieldDestroyed;
+            _shieldsComponent.OnShieldDestroyed += ShieldDestroyed;
     }
 
     void ActivatePowerUp(PowerUp.PowerUpType powerUpType)
@@ -296,6 +296,7 @@ public class Player : MonoBehaviour
             case PowerUp.PowerUpType.SHIELD:
                 if (_shieldsPrefab != null)
                     _shieldsPrefab.SetActive(true);
+                    _shieldsComponent.SetShieldHits(3);
                 break;
             default:
                 Debug.LogWarning($"Unhandled powerup: {powerUpType}");
@@ -335,7 +336,7 @@ public class Player : MonoBehaviour
 
     private void ShieldDestroyed()
     {
-        Shields.OnShieldDestroyed -= ShieldDestroyed;
+        _shieldsComponent.OnShieldDestroyed -= ShieldDestroyed;
 
         if (_shieldsPrefab != null)
             _shieldsPrefab.SetActive(false);

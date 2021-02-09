@@ -7,7 +7,7 @@ public class Shields : MonoBehaviour
 {
     [SerializeField] private GameObject _particleEffect = null;
 
-    public static Action OnShieldDestroyed;
+    public event Action OnShieldDestroyed;
 
     private SpriteRenderer _shieldSprite = null;
     private int _hitsRemaining = 3;
@@ -25,7 +25,7 @@ public class Shields : MonoBehaviour
         if (_particleEffect)
         {
             GameObject particle = Instantiate(_particleEffect, transform.position, Quaternion.identity);
-            particle.transform.parent = transform.parent;
+            Destroy(particle, 1f);
         }
     }
 
@@ -35,11 +35,7 @@ public class Shields : MonoBehaviour
 
         if(_hitsRemaining <= 0)
         {
-            if (OnShieldDestroyed != null)
-            {
-                OnShieldDestroyed();
-                _hitsRemaining = 3;
-            }
+            OnShieldDestroyed?.Invoke();
         }
 
         UpdateShieldVisuals();
@@ -65,5 +61,10 @@ public class Shields : MonoBehaviour
                 break;
         }
         _shieldSprite.color = spriteColor;
+    }
+    
+    public void SetShieldHits(int numberOfHits)
+    {
+        _hitsRemaining = numberOfHits;
     }
 }

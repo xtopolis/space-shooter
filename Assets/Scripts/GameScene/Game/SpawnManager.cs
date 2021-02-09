@@ -25,7 +25,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Wat();
+        //DebugLootPercents();
         _waveManager = GetComponent<WaveManager>();
         _waveManager.OnAllWavesDestroyed += JobsDone;
 
@@ -57,6 +57,11 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(SpawnGameObjectRandomly(true, new List<GameObject> {
             _collectablesPrefabs.ammo, _collectablesPrefabs.health
         }, _collectableSpawnRate));
+
+        // RandomPowerUp
+        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> {
+            _powerUpsPrefabs.tripleShot, _powerUpsPrefabs.shield, _powerUpsPrefabs.speedBoost
+        }, _powerUpSpawnRate));
     }
 
     private void OnDisable()
@@ -65,16 +70,16 @@ public class SpawnManager : MonoBehaviour
         Asteroid.AsteroidDestroyed -= StartSpawning;
     }
 
-    void StartSpawnerCoRoutines()
-    {
-        // Enemy
-        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { _enemyPrefab }, _enemySpawnRate, _enemyContainer.transform.parent));
+    //void StartSpawnerCoRoutines()
+    //{
+    //    // Enemy
+    //    StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> { _enemyPrefab }, _enemySpawnRate, _enemyContainer.transform.parent));
 
-        // RandomPowerUp
-        StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> {
-            _powerUpsPrefabs.tripleShot, _powerUpsPrefabs.shield, _powerUpsPrefabs.speedBoost
-        }, _powerUpSpawnRate));
-    }
+    //    // RandomPowerUp
+    //    StartCoroutine(SpawnGameObjectRandomly(_isSpawning, new List<GameObject> {
+    //        _powerUpsPrefabs.tripleShot, _powerUpsPrefabs.shield, _powerUpsPrefabs.speedBoost
+    //    }, _powerUpSpawnRate));
+    //}
 
     IEnumerator SpawnGameObjectRandomly(bool condition, List<GameObject> randomPrefab, float interval, Transform parent = null, bool forceSpawn = false)
     {
@@ -128,11 +133,11 @@ public class SpawnManager : MonoBehaviour
     {
         int randy = UnityEngine.Random.Range(0, 100);
 
-        if (randy <= 60)
+        if (randy <= 70)
         {
             return Collectable.CollectableType.AMMO;
         }
-        else if (randy <= 90)
+        else if (randy <= 95)
         {
             return Collectable.CollectableType.ANTIMATTER;
         }
@@ -158,7 +163,7 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    void Wat()
+    void DebugLootPercents()
     {
         Dictionary<Collectable.CollectableType, int> debug = new Dictionary<Collectable.CollectableType, int> {
             [Collectable.CollectableType.AMMO] = 0,
@@ -171,7 +176,5 @@ public class SpawnManager : MonoBehaviour
             Collectable.CollectableType c = CollectableItemFromTable();
             debug[c] = debug[c] + 1;
         }
-
-        print($"AMMO: {debug[Collectable.CollectableType.AMMO]} | ANTIMATTER: {debug[Collectable.CollectableType.ANTIMATTER]} | HEALTH: {debug[Collectable.CollectableType.HEALTH]}");
     }
 }
