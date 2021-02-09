@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public class Enemy : MonoBehaviour, IDestroyable
 {
@@ -27,6 +28,7 @@ public class Enemy : MonoBehaviour, IDestroyable
     private float _fireRate = 3f;
     private bool _isDestroyed = false;
     private EnemyType _enemyType = EnemyType.NORMAL;
+    private bool _isAggressiveEnemy = false;
 
     // Side to Side fields
     private bool _movingLeft = true;
@@ -61,6 +63,9 @@ public class Enemy : MonoBehaviour, IDestroyable
 
         if (UnityEngine.Random.Range(0,4) > 2)
             EnableShield();
+
+        if (UnityEngine.Random.Range(0, 3) > 1)
+            _isAggressiveEnemy = true;
 
         //Angler
         if (_enemyType == EnemyType.ANGLER)
@@ -134,7 +139,15 @@ public class Enemy : MonoBehaviour, IDestroyable
 
     void MoveNormally()
     {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        Collider2D playerCollider = Physics2D.OverlapCircleAll(transform.position, 3f).Where(collider2d => collider2d.CompareTag("Player")).FirstOrDefault();
+
+        if (_isAggressiveEnemy && playerCollider != null)
+        {
+            transform.position = Vector3.Lerp(transform.position, playerCollider.transform.position, 0.95f * Time.deltaTime);
+        } else
+        {
+            transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        }
     }
 
     void MoveSideToSide()
