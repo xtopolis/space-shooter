@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4612389851100303993}
   - component: {fileID: 6062682932429221965}
   - component: {fileID: 4112901692938881933}
+  - component: {fileID: -318029293829121506}
   m_Layer: 0
   m_Name: BlueWeapon
   m_TagString: Untagged
@@ -4754,3 +4755,17 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &-318029293829121506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7759120589363046167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c7507e7743dbf40b034c77d73824e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _upperYBound: 1
+  _lowerYBound: 1

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5468932658402877167}
   - component: {fileID: 8413985902624158089}
   - component: {fileID: -4945990292510500737}
+  - component: {fileID: -5632515117238825779}
   m_Layer: 0
   m_Name: Shields
   m_TagString: Untagged
@@ -198,3 +199,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-5632515117238825779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4851171092333271671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa54165761b25c14c981bd5be88b0b95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particleEffect: {fileID: 7184627875738253914, guid: afe3935995c63ed4e8c009afb6a96a83,
+    type: 3}
